@@ -1,0 +1,37 @@
+---
+version: "3"
+silent: true
+
+vars:
+  GOPATH_BIN:
+    sh: echo "$(go env GOPATH)/bin"
+
+env:
+  GOBIN: "{{.GOPATH_BIN }}"
+
+tasks:
+  run:
+    desc: "Runs the main application"
+    deps:
+      - vet
+    cmds:
+      - go run main.go
+
+  fmt:
+    desc: "Formats all Go source files"
+    cmds:
+      - go fmt ./...
+
+  vet:
+    desc: "Examines Go source code and reports suspicious constructs"
+    cmds:
+      - go vet ./...
+
+  test:
+    desc: "Runs all tests in the project"
+    aliases:
+      - tests
+    deps:
+      - vet
+    cmds:
+      - go test ./...

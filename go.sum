@@ -1,0 +1,16 @@
+github.com/alecthomas/assert/v2 v2.11.0 h1:2Q9r3ki8+JYXvGsDyBXwH3LcJ+WK5D0gc5E8vS6K3D0=
+github.com/alecthomas/assert/v2 v2.11.0/go.mod h1:Bze95FyfUr7x34QZrjL+XP+0qgp/zg8yS+TtBj1WA3k=
+github.com/alecthomas/kong v1.12.1 h1:iq6aMJDcFYP9uFrLdsiZQ2ZMmcshduyGv4Pek0MQPW0=
+github.com/alecthomas/kong v1.12.1/go.mod h1:p2vqieVMeTAnaC83txKtXe8FLke2X07aruPWXyMPQrU=
+github.com/alecthomas/repr v0.4.0 h1:GhI2A8MACjfegCPVq9f1FLvIBS+DrQ2KQBFZP1iFzXc=
+github.com/alecthomas/repr v0.4.0/go.mod h1:Fr0507jx4eOXV7AlPV6AVZLYrLIuIeSOWtW57eE/O/4=
+github.com/hexops/gotextdiff v1.0.3 h1:gitA9+qJrrTCsiCl7+kh75nPqQt1cx4ZkudSTLoUqJM=
+github.com/hexops/gotextdiff v1.0.3/go.mod h1:pSWU5MAI3yDq+fZBTazCSJysOMbxWL1BSow5/V2vxeg=
+github.com/jonboulle/clockwork v0.4.0 h1:p4Cf1aMWXnXAUh8lVfewRBx1zaTSYKrKMF2g3ST4RZ4=
+github.com/jonboulle/clockwork v0.4.0/go.mod h1:xgRqUGwRcjKCO1vbZUEtSLrqKoPSsUpK7fnezOII0kc=
+github.com/veerendra2/gopackages v1.1.0 h1:OKtTaB2dS342i+QCyvi1tHDRiMnX0HLuBsdkNgEN+Dg=
+github.com/veerendra2/gopackages v1.1.0/go.mod h1:mHXaCLdZaplgFRijPlzKywWh0g0UhUmdYO1D7i9OBcA=
+periph.io/x/conn/v3 v3.7.2 h1:qt9dE6XGP5ljbFnCKRJ9OOCoiOyBGlw7JZgoi72zZ1s=
+periph.io/x/conn/v3 v3.7.2/go.mod h1:Ao0b4sFRo4QOx6c1tROJU1fLJN1hUIYggjOrkIVnpGg=
+periph.io/x/host/v3 v3.8.5 h1:g4g5xE1XZtDiGl1UAJaUur1aT7uNiFLMkyMEiZ7IHII=
+periph.io/x/host/v3 v3.8.5/go.mod h1:hPq8dISZIc+UNfWoRj+bPH3XEBQqJPdFdx218W92mdc=
