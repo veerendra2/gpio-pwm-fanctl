@@ -1,4 +1,4 @@
-module github.com/veerendra2/gpio-fan
+module github.com/veerendra2/gpio-fanctl
 
 go 1.24.5
 

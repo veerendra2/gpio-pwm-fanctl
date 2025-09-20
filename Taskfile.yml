@@ -16,6 +16,8 @@ tasks:
       - vet
     cmds:
       - go run main.go
+    env:
+      LOG_FORMAT: console
 
   fmt:
     desc: "Formats all Go source files"

@@ -18,7 +18,7 @@ import (
 )
 
 const (
-	AppName = "gpio-fan"
+	AppName = "gpio-fanctl"
 	pwmFreq = 25_000 * physic.Hertz // 25kHz PWM frequency for the fan
 )
 
