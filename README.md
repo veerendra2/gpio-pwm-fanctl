@@ -1,20 +1,9 @@
 # GPIO Fan
 
-**gpio-fan** is a lightweight and efficient fan controller for Raspberry Pi (tested on Pi 4), written in Go.
+A lightweight and efficient fan controller for Raspberry Pi (tested on Pi 4), written in Go.
 It uses GPIO hardware PWM to adjust your 3-pin fan speed based on CPU temperature, helping to keep your Pi cool and quiet. ❄️🔥
----
 
-## Installation
-
-Build from source (requires Go 1.18+):
-
-```bash
-git clone https://github.com/veerendra2/gpio-fan.git
-cd gpio-fan
-go build -o gpio-fan
-```
-
-## Example systemd service (optional)
+## Systemd service
 
 ```
 [Unit]

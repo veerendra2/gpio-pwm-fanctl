@@ -2,8 +2,8 @@ package main
 
 import (
 	"fmt"
-	"io/ioutil"
 	"log/slog"
+	"os"
 	"strconv"
 	"strings"
 	"time"
@@ -22,6 +22,16 @@ const (
 	pwmFreq = 25_000 * physic.Hertz // 25kHz PWM frequency for the fan
 )
 
+var tempThresholds = []struct {
+	tempC float64
+	duty  int
+}{
+	{80, 100},
+	{70, 80},
+	{35, 60},
+	{0, 40},
+}
+
 var cli struct {
 	FanPin   string        `env:"FAN_PIN"      default:"GPIO18" help:"GPIO pin connected to the fan (must support PWM)."`
 	TempFile string        `env:"TEMP_FILE"    default:"/sys/class/thermal/thermal_zone0/temp" help:"Path to the CPU temperature file."`
@@ -30,22 +40,9 @@ var cli struct {
 	Log slogger.Config `embed:"" prefix:"log." envprefix:"LOG_"`
 }
 
-// TempThreshold defines a temperature-to-duty mapping.
-type TempThreshold struct {
-	MinTempC float64 // Minimum temperature (°C) to apply this threshold
-	Duty     int     // Duty cycle percentage
-}
-
-var tempThresholds = []TempThreshold{
-	{MinTempC: 80, Duty: 100},
-	{MinTempC: 70, Duty: 80},
-	{MinTempC: 35, Duty: 60},
-	{MinTempC: 0, Duty: 40},
-}
-
 // getTemp reads and returns the current CPU temperature in °C.
-func getTemp(path string) (float64, error) {
-	data, err := ioutil.ReadFile(path)
+func getTemp(tempFile string) (float64, error) {
+	data, err := os.ReadFile(tempFile)
 	if err != nil {
 		return 0, fmt.Errorf("read temp file: %w", err)
 	}
@@ -57,17 +54,16 @@ func getTemp(path string) (float64, error) {
 }
 
 // dutyForTemp returns the PWM duty percentage based on the temperature.
-func dutyForTemp(temp float64) int {
-	for _, t := range tempThresholds {
-		if temp >= t.MinTempC {
-			return t.Duty
+func dutyForTemp(t float64) int {
+	for _, th := range tempThresholds {
+		if t >= th.tempC {
+			return th.duty
 		}
 	}
 	return 0
 }
 
 func main() {
-	// Parse CLI arguments and env vars
 	kctx := kong.Parse(&cli, kong.Name(AppName))
 	kctx.FatalIfErrorf(kctx.Error)
 
@@ -91,19 +87,15 @@ func main() {
 		kctx.Exit(1)
 	}
 
-	// Set pin to output low
 	if err := pin.Out(gpio.Low); err != nil {
 		slog.Error("Failed to set pin as output", slog.Any("error", err))
 		kctx.Exit(1)
 	}
 
-	// Check if PWM is supported by trying to set 0% duty
 	if err := pin.PWM(0, pwmFreq); err != nil {
 		slog.Error("PWM not supported on this pin", slog.Any("error", err))
 		kctx.Exit(1)
 	}
-
-	slog.Debug("PWM setup complete")
 
 	prevDuty := -1
 
