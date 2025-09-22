@@ -1,42 +1,69 @@
-# GPIO Fan Controller
+# GPIO PWM Fan Controller
 
-A lightweight and efficient fan controller for Raspberry Pi (tested on Pi 4), written in Go.
-It uses GPIO hardware PWM to adjust your 3-pin fan speed based on CPU temperature, helping to keep your Pi cool and quiet. ❄️🔥
+A simple CLI tool to control 3-wire PWM fans on Raspberry Pi.
 
-My Raspberry Pi Config
+## 📦 Installation
 
-<table>
-<tr>
-  <td>Model</td>
-  <td>Raspberry Pi 4 Model B Rev 1.4</td>
-</tr>
-<tr>
-  <td>CPU</td>
-  <td>BCM2835 (4) @ 1.800GHz</td>
-</tr>
-<tr>
-  <td>Memory</td>
-  <td>8 GB</td>
-</tr>
-<tr>
-  <td>Case</td>
-  <td>Geekworm NASPi Gemini 2.5 V2.0 Dual 2.5 Inch SATA HDD/SSD</td>
-</tr>
-</table>
-
-## Systemd service
-
+```sh
+git clone https://github.com/yourusername/gpio-pwm-fanctl.git
+cd gpio-pwm-fanctl
+go build -o gpio-pwm-fanctl
 ```
-[Unit]
-Description=GPIO Fan Controller
-After=multi-user.target
 
-[Service]
-Type=simple
-ExecStart=/path/to/gpio-fanctl
-Restart=always
-User=root
+## 🏃 Usage
 
-[Install]
-WantedBy=multi-user.target
+```sh
+sudo ./gpio-pwm-fanctl --fan-pin=18 --pwm-freq=25000 --temp-file=/sys/class/thermal/thermal_zone0/temp --delay=60s
 ```
+
+Or use environment variables:
+
+```sh
+export FAN_PIN=18
+export PWM_FREQ=25000
+export TEMP_FILE=/sys/class/thermal/thermal_zone0/temp
+export DELAY=60s
+sudo ./gpio-pwm-fanctl
+```
+
+---
+
+## ⚙️ CLI Options
+
+| Option        | Description                                     | Default                               |
+| ------------- | ----------------------------------------------- | ------------------------------------- |
+| `--fan-pin`   | BCM GPIO pin number for PWM fan control         | 18                                    |
+| `--pwm-freq`  | PWM frequency in Hz                             | 25000                                 |
+| `--temp-file` | Path to CPU temperature file                    | /sys/class/thermal/thermal_zone0/temp |
+| `--delay`     | Delay between temperature checks (e.g. 30s, 1m) | 60s                                   |
+
+---
+
+## 🌡️ Fan Speed Mapping
+
+| Temperature (°C) | Fan Speed (%) |
+| ---------------- | ------------- |
+| 0                | 40            |
+| 35               | 60            |
+| 70               | 80            |
+| 80               | 100           |
+
+Fan speed increases as temperature rises, keeping your system cool and quiet!
+
+---
+
+## 📝 Example
+
+```sh
+sudo ./gpio-pwm-fanctl --fan-pin=18 --pwm-freq=25000 --delay=30s
+```
+
+---
+
+## 🛡️ Requirements
+
+- Linux SBC with hardware PWM support (e.g., Raspberry Pi)
+- Go 1.18+
+- Root privileges (for GPIO access)
+
+---

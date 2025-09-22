@@ -9,18 +9,23 @@ import (
 	"time"
 
 	"github.com/alecthomas/kong"
+	"github.com/stianeikeland/go-rpio/v4"
 	"github.com/veerendra2/gopackages/slogger"
-
-	"periph.io/x/conn/v3/gpio"
-	"periph.io/x/conn/v3/gpio/gpioreg"
-	"periph.io/x/conn/v3/physic"
-	"periph.io/x/host/v3"
 )
 
 const (
-	AppName = "gpio-fanctl"
-	pwmFreq = 25_000 * physic.Hertz // 25kHz PWM frequency for the fan
+	AppName = "gpio-pwm-fanctl"
+	PwmMax  = 100
 )
+
+var cli struct {
+	FanPin   int           `env:"FAN_PIN"      default:"18" help:"BCM GPIO pin number connected to the fan (must support PWM, e.g. 18 for GPIO18)."`
+	TempFile string        `env:"TEMP_FILE"    default:"/sys/class/thermal/thermal_zone0/temp" help:"Path to the CPU temperature file."`
+	PwmFreq  int           `env:"PWM_FREQ"     default:"25000" help:"PWM frequency in Hz for the fan (e.g. 25000, 20000)." required:"" greater_than:"0"`
+	Delay    time.Duration `env:"DELAY"        default:"60s" help:"Delay between temperature checks (e.g. 30s, 1m)."`
+
+	Log slogger.Config `embed:"" prefix:"log." envprefix:"LOG_"`
+}
 
 var tempThresholds = []struct {
 	tempC float64
@@ -30,14 +35,6 @@ var tempThresholds = []struct {
 	{70, 80},
 	{35, 60},
 	{0, 40},
-}
-
-var cli struct {
-	FanPin   string        `env:"FAN_PIN"      default:"GPIO18" help:"GPIO pin connected to the fan (must support PWM)."`
-	TempFile string        `env:"TEMP_FILE"    default:"/sys/class/thermal/thermal_zone0/temp" help:"Path to the CPU temperature file."`
-	Delay    time.Duration `env:"DELAY"        default:"60s" help:"Delay between temperature checks (e.g. 30s, 1m)."`
-
-	Log slogger.Config `embed:"" prefix:"log." envprefix:"LOG_"`
 }
 
 // getTemp reads and returns the current CPU temperature in °C.
@@ -64,63 +61,57 @@ func dutyForTemp(t float64) int {
 }
 
 func main() {
-	kctx := kong.Parse(&cli, kong.Name(AppName))
+	kctx := kong.Parse(&cli, kong.Name(AppName), kong.Description(
+		`A simple CLI tool to control 3-wire PWM fans on Raspberry Pi.
+
+Fan speed mapping (temperature °C → fan speed %):
+  80°C  = 100%
+  70°C  = 80%
+  35°C  = 60%
+  0°C   = 40%
+`))
 	kctx.FatalIfErrorf(kctx.Error)
 
 	slog.SetDefault(slogger.New(cli.Log))
 
 	slog.Info("Starting fan controller",
-		slog.String("pin", cli.FanPin),
+		slog.Int("fan_pin", cli.FanPin),
+		slog.Int("pwm_frequency", cli.PwmFreq),
 		slog.String("temp_file", cli.TempFile),
 		slog.Duration("delay", cli.Delay),
 	)
 
-	// Initialize periph.io
-	if _, err := host.Init(); err != nil {
-		slog.Error("Failed to initialize periph.io", slog.Any("error", err))
-		kctx.Exit(1)
+	err := rpio.Open()
+	if err != nil {
+		fmt.Println("Failed to open GPIO:", err)
+		return
 	}
+	defer rpio.Close()
 
-	pin := gpioreg.ByName(cli.FanPin)
-	if pin == nil {
-		slog.Error("Invalid GPIO pin", slog.String("pin", cli.FanPin))
-		kctx.Exit(1)
-	}
-
-	if err := pin.Out(gpio.Low); err != nil {
-		slog.Error("Failed to set pin as output", slog.Any("error", err))
-		kctx.Exit(1)
-	}
-
-	if err := pin.PWM(0, pwmFreq); err != nil {
-		slog.Error("PWM not supported on this pin", slog.Any("error", err))
-		kctx.Exit(1)
-	}
+	pin := rpio.Pin(cli.FanPin)
+	pin.Mode(rpio.Pwm)
+	pin.Pwm()
+	pin.Freq(cli.PwmFreq)
+	rpio.StartPwm()
 
 	prevDuty := -1
 
 	for {
 		temp, err := getTemp(cli.TempFile)
 		if err != nil {
-			slog.Error("Failed to read temperature", slog.Any("error", err))
-			time.Sleep(cli.Delay)
-			continue
+			slog.Error("Failed to read temperature file", slog.Any("error", err))
+			kctx.Exit(1)
 		}
 
 		duty := dutyForTemp(temp)
 		if duty != prevDuty {
-			dutyVal := gpio.Duty(duty) * gpio.DutyMax / 100
-			if err := pin.PWM(dutyVal, pwmFreq); err != nil {
-				slog.Error("Failed to set PWM", slog.Any("error", err))
-			} else {
-				slog.Info("Fan speed updated",
-					slog.Float64("temp_c", temp),
-					slog.Int("duty_percent", duty),
-				)
-				prevDuty = duty
-			}
+			pin.DutyCycleWithPwmMode(uint32(duty), PwmMax, true)
+			slog.Info("Fan speed updated",
+				slog.Float64("temperature", temp),
+				slog.Int("duty_percent", duty),
+			)
+			prevDuty = duty
 		}
-
 		time.Sleep(cli.Delay)
 	}
 }

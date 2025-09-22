@@ -6,11 +6,9 @@ github.com/alecthomas/repr v0.4.0 h1:GhI2A8MACjfegCPVq9f1FLvIBS+DrQ2KQBFZP1iFzXc
 github.com/alecthomas/repr v0.4.0/go.mod h1:Fr0507jx4eOXV7AlPV6AVZLYrLIuIeSOWtW57eE/O/4=
 github.com/hexops/gotextdiff v1.0.3 h1:gitA9+qJrrTCsiCl7+kh75nPqQt1cx4ZkudSTLoUqJM=
 github.com/hexops/gotextdiff v1.0.3/go.mod h1:pSWU5MAI3yDq+fZBTazCSJysOMbxWL1BSow5/V2vxeg=
-github.com/jonboulle/clockwork v0.4.0 h1:p4Cf1aMWXnXAUh8lVfewRBx1zaTSYKrKMF2g3ST4RZ4=
-github.com/jonboulle/clockwork v0.4.0/go.mod h1:xgRqUGwRcjKCO1vbZUEtSLrqKoPSsUpK7fnezOII0kc=
+github.com/stianeikeland/go-rpio/v4 v4.6.0 h1:eAJgtw3jTtvn/CqwbC82ntcS+dtzUTgo5qlZKe677EY=
+github.com/stianeikeland/go-rpio/v4 v4.6.0/go.mod h1:A3GvHxC1Om5zaId+HqB3HKqx4K/AqeckxB7qRjxMK7o=
 github.com/veerendra2/gopackages v1.1.0 h1:OKtTaB2dS342i+QCyvi1tHDRiMnX0HLuBsdkNgEN+Dg=
 github.com/veerendra2/gopackages v1.1.0/go.mod h1:mHXaCLdZaplgFRijPlzKywWh0g0UhUmdYO1D7i9OBcA=
 periph.io/x/conn/v3 v3.7.2 h1:qt9dE6XGP5ljbFnCKRJ9OOCoiOyBGlw7JZgoi72zZ1s=
 periph.io/x/conn/v3 v3.7.2/go.mod h1:Ao0b4sFRo4QOx6c1tROJU1fLJN1hUIYggjOrkIVnpGg=
-periph.io/x/host/v3 v3.8.5 h1:g4g5xE1XZtDiGl1UAJaUur1aT7uNiFLMkyMEiZ7IHII=
-periph.io/x/host/v3 v3.8.5/go.mod h1:hPq8dISZIc+UNfWoRj+bPH3XEBQqJPdFdx218W92mdc=
