@@ -89,6 +89,7 @@ Flags:
    ```
 
 2. Create the systemd service file
+
    Save the following as `/etc/systemd/system/gpio-pwm-fanctl.service`:
 
    ```ini
