@@ -99,7 +99,7 @@ Flags:
 
    [Service]
    Type=simple
-   ExecStart=/usr/local/bin/gpio-pwm-fanctl
+   ExecStart=/usr/local/bin/gpio-pwm-fanctl --log.add-source=false
    Restart=on-failure
    User=root
 
