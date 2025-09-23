@@ -1,6 +1,6 @@
 # GPIO PWM Fan Controller
 
-A simple CLI tool to control 3-wire PWM fans on Raspberry Pi.
+A simple CLI tool to control 3-wire PWM fan on Raspberry Pi.
 
 ## My Raspberry Pi Config
 
@@ -47,7 +47,7 @@ A simple CLI tool to control 3-wire PWM fans on Raspberry Pi.
 ```sh
 Usage: gpio-pwm-fanctl --pwm-freq=25000 [flags]
 
-A simple CLI tool to control 3-wire PWM fans on Raspberry Pi.
+A simple CLI tool to control 3-wire PWM fan on Raspberry Pi.
 
 Fan speed mapping (temperature °C → fan speed %):
 

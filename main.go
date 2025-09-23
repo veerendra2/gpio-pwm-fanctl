@@ -62,7 +62,7 @@ func dutyForTemp(t uint8) uint32 {
 
 func main() {
 	kctx := kong.Parse(&cli, kong.Name(AppName), kong.Description(
-		`A simple CLI tool to control 3-wire PWM fans on Raspberry Pi.
+		`A simple CLI tool to control 3-wire PWM fan on Raspberry Pi.
 
 Fan speed mapping (temperature °C → fan speed %):
   80°C  = 100%
