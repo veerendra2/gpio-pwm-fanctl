@@ -14,22 +14,22 @@ import (
 )
 
 const (
-	AppName = "gpio-pwm-fanctl"
-	PwmMax  = 100
+	AppName string = "gpio-pwm-fanctl"
+	PwmMax  uint32 = 100
 )
 
 var cli struct {
-	FanPin   int           `env:"FAN_PIN"      default:"18" help:"BCM GPIO pin number connected to the fan (must support PWM, e.g. 18 for GPIO18)."`
+	FanPin   uint8         `env:"FAN_PIN"      default:"18" help:"BCM GPIO pin number connected to the fan (must support PWM, e.g. 18 for GPIO18)."`
 	TempFile string        `env:"TEMP_FILE"    default:"/sys/class/thermal/thermal_zone0/temp" help:"Path to the CPU temperature file."`
 	PwmFreq  int           `env:"PWM_FREQ"     default:"25000" help:"PWM frequency in Hz for the fan (e.g. 25000, 20000)." required:"" greater_than:"0"`
-	Delay    time.Duration `env:"DELAY"        default:"60s" help:"Delay between temperature checks (e.g. 30s, 1m)."`
+	Delay    time.Duration `env:"DELAY"        default:"2m" help:"Delay between temperature checks (e.g. 30s, 1m)."`
 
 	Log slogger.Config `embed:"" prefix:"log." envprefix:"LOG_"`
 }
 
 var tempThresholds = []struct {
-	tempC float64
-	duty  int
+	tempC uint8
+	duty  uint32
 }{
 	{80, 100},
 	{70, 80},
@@ -38,7 +38,7 @@ var tempThresholds = []struct {
 }
 
 // getTemp reads and returns the current CPU temperature in °C.
-func getTemp(tempFile string) (float64, error) {
+func getTemp(tempFile string) (uint8, error) {
 	data, err := os.ReadFile(tempFile)
 	if err != nil {
 		return 0, fmt.Errorf("read temp file: %w", err)
@@ -47,11 +47,11 @@ func getTemp(tempFile string) (float64, error) {
 	if err != nil {
 		return 0, fmt.Errorf("parse temp: %w", err)
 	}
-	return val / 1000.0, nil
+	return uint8(val / 1000), nil
 }
 
 // dutyForTemp returns the PWM duty percentage based on the temperature.
-func dutyForTemp(t float64) int {
+func dutyForTemp(t uint8) uint32 {
 	for _, th := range tempThresholds {
 		if t >= th.tempC {
 			return th.duty
@@ -75,7 +75,7 @@ Fan speed mapping (temperature °C → fan speed %):
 	slog.SetDefault(slogger.New(cli.Log))
 
 	slog.Info("Starting fan controller",
-		slog.Int("fan_pin", cli.FanPin),
+		slog.Uint64("fan_pin", uint64(cli.FanPin)),
 		slog.Int("pwm_frequency", cli.PwmFreq),
 		slog.String("temp_file", cli.TempFile),
 		slog.Duration("delay", cli.Delay),
@@ -84,9 +84,13 @@ Fan speed mapping (temperature °C → fan speed %):
 	err := rpio.Open()
 	if err != nil {
 		fmt.Println("Failed to open GPIO:", err)
-		return
+		kctx.Exit(1)
 	}
-	defer rpio.Close()
+	defer func() {
+		if err = rpio.Close(); err != nil {
+			slog.Warn("Unable to close GPIO", slog.Any("err", err))
+		}
+	}()
 
 	pin := rpio.Pin(cli.FanPin)
 	pin.Mode(rpio.Pwm)
@@ -94,7 +98,7 @@ Fan speed mapping (temperature °C → fan speed %):
 	pin.Freq(cli.PwmFreq)
 	rpio.StartPwm()
 
-	prevDuty := -1
+	var prevDuty uint32 = 0
 
 	for {
 		temp, err := getTemp(cli.TempFile)
@@ -105,10 +109,10 @@ Fan speed mapping (temperature °C → fan speed %):
 
 		duty := dutyForTemp(temp)
 		if duty != prevDuty {
-			pin.DutyCycleWithPwmMode(uint32(duty), PwmMax, true)
+			pin.DutyCycleWithPwmMode(duty, PwmMax, true)
 			slog.Info("Fan speed updated",
-				slog.Float64("temperature", temp),
-				slog.Int("duty_percent", duty),
+				slog.Uint64("temperature", uint64(temp)),
+				slog.Uint64("duty_percent", uint64(duty)),
 			)
 			prevDuty = duty
 		}

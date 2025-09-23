@@ -37,3 +37,8 @@ tasks:
       - vet
     cmds:
       - go test ./...
+
+  build:
+    desc: "Builds the application binary"
+    cmds:
+      - go build -o gpio-pwm-fanctl main.go
