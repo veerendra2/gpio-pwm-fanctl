@@ -73,19 +73,20 @@ Flags:
 1. Get the binary
 
    1. Build
+
       > https://taskfile.dev/
 
-   ```bash
-   git clone git@github.com:veerendra2/gpio-pwm-fanctl.git
-   task build
-   ```
+      ```bash
+      git clone git@github.com:veerendra2/gpio-pwm-fanctl.git
+      task build
+      ```
 
    2. Or download from [latest releases](https://github.com/veerendra2/gpio-pwm-fanctl/releases)
 
-```bash
-chmod +x gpio-pwm-fanctl
-sudo mv gpio-pwm-fanctl /usr/local/bin/gpio-pwm-fanctl
-```
+   ```bash
+   chmod +x gpio-pwm-fanctl
+   sudo mv gpio-pwm-fanctl /usr/local/bin/gpio-pwm-fanctl
+   ```
 
 2. Create the systemd service file
    Save the following as `/etc/systemd/system/gpio-pwm-fanctl.service`:
@@ -114,7 +115,7 @@ sudo mv gpio-pwm-fanctl /usr/local/bin/gpio-pwm-fanctl
    sudo systemctl enable --now gpio-pwm-fanctl
    ```
 
-4. **Check service status**
+4. Check service status
 
    ```bash
    sudo systemctl status gpio-pwm-fanctl

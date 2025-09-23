@@ -6,7 +6,7 @@ on:
 
 jobs:
   golangci-lint:
-    name: Lint SourceCode
+    name: Lint Source Code
     runs-on: ubuntu-latest
     steps:
       - name: Check out code
