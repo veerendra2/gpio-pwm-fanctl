@@ -103,9 +103,8 @@ Fan speed mapping (temperature °C → fan speed %):
 	for {
 		temp, err := getTemp(cli.TempFile)
 		if err != nil {
-			slog.Error("Failed to read temperature file, will retry", slog.Any("error", err))
-			time.Sleep(cli.Delay)
-			continue
+			slog.Error("Failed to read temperature file", slog.Any("error", err))
+			kctx.Exit(1)
 		}
 
 		duty := dutyForTemp(temp)
