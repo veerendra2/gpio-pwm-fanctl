@@ -83,7 +83,7 @@ Fan speed mapping (temperature °C → fan speed %):
 
 	err := rpio.Open()
 	if err != nil {
-		fmt.Println("Failed to open GPIO:", err)
+		slog.Error("Failed to open GPIO", slog.Any("err", err))
 		kctx.Exit(1)
 	}
 	defer func() {

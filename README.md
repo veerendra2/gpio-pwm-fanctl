@@ -93,18 +93,19 @@ Flags:
    Save the following as `/etc/systemd/system/gpio-pwm-fanctl.service`:
 
    ```ini
-   [Unit]
-   Description=GPIO PWM Fan Controller
-   After=network.target
+    [Unit]
+    Description=GPIO PWM Fan Controller
+    After=network.target
 
-   [Service]
-   Type=simple
-   ExecStart=/usr/local/bin/gpio-pwm-fanctl --log.add-source=false
-   Restart=on-failure
-   User=root
+    [Service]
+    Type=simple
+    ExecStart=/usr/local/bin/gpio-pwm-fanctl --log.add-source=false
+    ExecStop=/bin/kill -TERM $MAINPID
+    Restart=on-failure
+    User=root
 
-   [Install]
-   WantedBy=multi-user.target
+    [Install]
+    WantedBy=multi-user.target
    ```
 
    > **Note:** Adjust the `ExecStart` path if your binary is elsewhere.
