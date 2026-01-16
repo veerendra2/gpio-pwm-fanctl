@@ -11,6 +11,7 @@ import (
 	"github.com/alecthomas/kong"
 	"github.com/stianeikeland/go-rpio/v4"
 	"github.com/veerendra2/gopackages/slogger"
+	"github.com/veerendra2/gopackages/version"
 )
 
 const (
@@ -24,7 +25,8 @@ var cli struct {
 	PwmFreq  int           `env:"PWM_FREQ"     default:"25000" help:"PWM frequency in Hz for the fan (e.g. 25000, 20000)." required:"" greater_than:"0"`
 	Delay    time.Duration `env:"DELAY"        default:"2m" help:"Delay between temperature checks (e.g. 30s, 1m)."`
 
-	Log slogger.Config `embed:"" prefix:"log." envprefix:"LOG_"`
+	Log     slogger.Config   `embed:"" prefix:"log." envprefix:"LOG_"`
+	Version kong.VersionFlag `name:"version" help:"Print version information and exit"`
 }
 
 var tempThresholds = []struct {
@@ -69,26 +71,34 @@ Fan speed mapping (temperature °C → fan speed %):
   70°C  = 80%
   35°C  = 60%
   0°C   = 40%
-`))
+`),
+		kong.Vars{
+			"version": version.Version,
+		},
+	)
+
 	kctx.FatalIfErrorf(kctx.Error)
 
 	slog.SetDefault(slogger.New(cli.Log))
 
+	slog.Info("Version information", version.Info()...)
+	slog.Info("Build context", version.BuildContext()...)
+
 	slog.Info("Starting fan controller",
-		slog.Uint64("fan_pin", uint64(cli.FanPin)),
-		slog.Int("pwm_frequency", cli.PwmFreq),
-		slog.String("temp_file", cli.TempFile),
-		slog.Duration("delay", cli.Delay),
+		"fan_pin", cli.FanPin,
+		"pwm_frequency", cli.PwmFreq,
+		"temp_file", cli.TempFile,
+		"delay", cli.Delay,
 	)
 
 	err := rpio.Open()
 	if err != nil {
-		slog.Error("Failed to open GPIO", slog.Any("err", err))
+		slog.Error("Failed to open GPIO", "error", err)
 		kctx.Exit(1)
 	}
 	defer func() {
 		if err = rpio.Close(); err != nil {
-			slog.Warn("Unable to close GPIO", slog.Any("err", err))
+			slog.Warn("Unable to close GPIO", "error", err)
 		}
 	}()
 
@@ -103,7 +113,7 @@ Fan speed mapping (temperature °C → fan speed %):
 	for {
 		temp, err := getTemp(cli.TempFile)
 		if err != nil {
-			slog.Error("Failed to read temperature file", slog.Any("error", err))
+			slog.Error("Failed to read temperature file", "error", err)
 			kctx.Exit(1)
 		}
 
@@ -111,8 +121,8 @@ Fan speed mapping (temperature °C → fan speed %):
 		if duty != prevDuty {
 			pin.DutyCycleWithPwmMode(duty, PwmMax, true)
 			slog.Info("Fan speed updated",
-				slog.Uint64("temperature", uint64(temp)),
-				slog.Uint64("duty_percent", uint64(duty)),
+				"temperature", temp,
+				"duty_percent", duty,
 			)
 			prevDuty = duty
 		}
