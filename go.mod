@@ -3,11 +3,11 @@ module github.com/veerendra2/gpio-pwm-fanctl
 go 1.25.1
 
 require (
-	github.com/alecthomas/kong v1.12.1
+	github.com/alecthomas/kong v1.13.0
 	github.com/onsi/ginkgo/v2 v2.25.3
 	github.com/onsi/gomega v1.38.2
 	github.com/stianeikeland/go-rpio/v4 v4.6.0
-	github.com/veerendra2/gopackages v1.1.1
+	github.com/veerendra2/gopackages v1.2.3
 )
 
 require (
@@ -19,7 +19,7 @@ require (
 	go.uber.org/automaxprocs v1.6.0 // indirect
 	go.yaml.in/yaml/v3 v3.0.4 // indirect
 	golang.org/x/net v0.43.0 // indirect
-	golang.org/x/sys v0.36.0 // indirect
+	golang.org/x/sys v0.39.0 // indirect
 	golang.org/x/text v0.28.0 // indirect
 	golang.org/x/tools v0.36.0 // indirect
 )
