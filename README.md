@@ -57,15 +57,15 @@ Fan speed mapping (temperature °C → fan speed %):
     0°C   = 40%
 
 Flags:
-  -h, --help                 Show context-sensitive help.
-      --fan-pin=18           BCM GPIO pin number connected to the fan (must support PWM, e.g. 18 for GPIO18) ($FAN_PIN).
-      --temp-file="/sys/class/thermal/thermal_zone0/temp"
-                             Path to the CPU temperature file ($TEMP_FILE).
-      --pwm-freq=25000       PWM frequency in Hz for the fan (e.g. 25000, 20000) ($PWM_FREQ).
-      --delay=2m             Delay between temperature checks (e.g. 30s, 1m) ($DELAY).
-      --log.format="json"    Set the output format of the logs. Must be "console" or "json" ($LOG_FORMAT).
-      --log.level=INFO       Set the log level. Must be "DEBUG", "INFO", "WARN" or "ERROR" ($LOG_LEVEL).
-      --log.add-source       Whether to add source file and line number to log records ($LOG_ADD_SOURCE).
+  -h, --help                                                 Show context-sensitive help.
+      --fan-pin=18                                           BCM GPIO pin number connected to the fan (must support PWM, e.g. 18 for GPIO18) ($FAN_PIN).
+      --temp-file="/sys/class/thermal/thermal_zone0/temp"    Path to the CPU temperature file ($TEMP_FILE).
+      --pwm-freq=25000                                       PWM frequency in Hz for the fan (e.g. 25000, 20000) ($PWM_FREQ).
+      --delay=2m                                             Delay between temperature checks (e.g. 30s, 1m) ($DELAY).
+      --log.format="console"                                 Set the output format of the logs. Must be "console" or "json" ($LOG_FORMAT).
+      --log.level=INFO                                       Set the log level. Must be "DEBUG", "INFO", "WARN" or "ERROR" ($LOG_LEVEL).
+      --log.add-source                                       Whether to add source file and line number to log records ($LOG_ADD_SOURCE).
+      --version                                              Print version information and exit
 ```
 
 ## Installation (as a systemd service)
@@ -99,7 +99,7 @@ Flags:
 
     [Service]
     Type=simple
-    ExecStart=/usr/local/bin/gpio-pwm-fanctl --log.add-source=false
+    ExecStart=/usr/local/bin/gpio-pwm-fanctl
     ExecStop=/bin/kill -TERM $MAINPID
     Restart=on-failure
     User=root

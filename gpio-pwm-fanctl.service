@@ -4,7 +4,7 @@ After=network.target
 
 [Service]
 Type=simple
-ExecStart=/usr/local/bin/gpio-pwm-fanctl --log.add-source=false
+ExecStart=/usr/local/bin/gpio-pwm-fanctl
 ExecStop=/bin/kill -TERM $MAINPID
 Restart=on-failure
 User=root
