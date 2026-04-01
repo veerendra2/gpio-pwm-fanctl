@@ -3,7 +3,7 @@ module github.com/veerendra2/gpio-pwm-fanctl
 go 1.25.1
 
 require (
-	github.com/alecthomas/kong v1.14.0
+	github.com/alecthomas/kong v1.15.0
 	github.com/onsi/ginkgo/v2 v2.28.1
 	github.com/onsi/gomega v1.39.1
 	github.com/stianeikeland/go-rpio/v4 v4.6.0
