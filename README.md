@@ -123,4 +123,4 @@ Flags:
    sudo systemctl status gpio-pwm-fanctl
    ```
 
-The service will now start automatically on boot and control your fan with
+The service will now start automatically on boot and controls your fan.
