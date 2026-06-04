@@ -1,6 +1,6 @@
 module github.com/veerendra2/gpio-pwm-fanctl
 
-go 1.26.1
+go 1.26.4
 
 require (
 	github.com/alecthomas/kong v1.15.0
